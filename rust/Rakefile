@@ -1,0 +1,46 @@
+require 'pathname'
+
+###
+### stuff to configure
+### (cuda is for using nvidia GPU, separate torch installation could be avoided with flag to tch crate in Cargo.toml)
+###
+
+CUDA_AT = "/opt/cuda/lib64"
+TORCH_AT = Pathname("~/Documents/libtorch").expand_path
+
+env_vars = {
+  "LD_PRELOAD" => [
+    TORCH_AT + 'lib/libtorch_cuda.so',
+    TORCH_AT + 'lib/libc10_cuda.so',
+  ].map(&:to_s).join(':'),
+
+  "LD_LIBRARY_PATH" => [
+    TORCH_AT + 'lib',
+    CUDA_AT,
+  ].map(&:to_s).join(':'),
+
+  "LIBTORCH" => TORCH_AT.to_s,
+  "TORCH_CUDA_VERSION" => "cu124"
+}
+
+env = env_vars.map { |key, value| "#{key}=#{value}" }.join(" ") + ' '
+
+desc "Run the Rust application with libtorch and CUDA environment variables"
+task :default do
+  exec env + 'cargo run'
+end
+
+desc "--release"
+task :r do
+  exec env + 'cargo run --release'
+end
+
+desc "build --release"
+task :b do
+  exec env + 'cargo build --release'
+end
+
+desc "test --doc"
+task :t do
+  exec env + 'cargo test --doc'
+end

@@ -20,7 +20,7 @@ Also I did not estimate what GPU's are supported, but it should run on CPU too.
 https://sowcow.github.io/make-parallel-text/
 
 One point this example shows is that anywhere in the middle between more aligned items things are not guaranteed to match at all, yet this does not cause it to fail overall.
-Also it shows crude handling of punctiuation overall and a couple of lost lines at the very end.
+Also it shows crude handling of punctiuation overall and a couple of lost lines at the very end, but that is less likely to happen in normal not stretch-case like this one.
 
 <p align="center">
   <img src="log/0.png" alt="Matrix" width="45%">

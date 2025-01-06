@@ -3,7 +3,6 @@ mod html;
 mod search;
 mod similarity;
 mod split;
-mod translation;
 
 use align::*;
 use anyhow::*;
@@ -19,7 +18,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 use std::path::PathBuf;
-use translation::*;
 
 use tch::Device;
 

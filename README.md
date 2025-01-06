@@ -1,8 +1,8 @@
 # Make Parallel Text
 
 Make html/ebook containing parallel text from two translations of the same text, or translation to original.
-It aligns sentences on semantical similarity.
-Languges used need to be supported by underlying model, it supports 10+ modern languages.
+It aligns sentences based on semantical similarity.
+Languages used need to be supported by the underlying model, which supports 10+ modern languages.
 
 Languages of two texts can be different, so the main use case now is language learning material generation.
 Somewhat stretch of an idea is to align more poetic translation of a text with more verbose one for comparison.
@@ -20,7 +20,7 @@ Also I did not estimate what GPU's are supported, but it should run on CPU too.
 https://sowcow.github.io/make-parallel-text/
 
 One point this example shows is that anywhere in the middle between more aligned items things are not guaranteed to match at all, yet this does not cause it to fail overall.
-Also it shows crude handling of punctiuation overall.
+Also it shows crude handling of punctiuation overall and a couple of lost lines at the very end.
 
 <p align="center">
   <img src="log/0.png" alt="Matrix" width="45%">
@@ -73,7 +73,7 @@ But on some hardware it may need to be reduced for speed or VRAM reasons.
 
 ## Input preparation
 
-Ideally input files should be aligned early as mentioned above.
+Ideally, input files should be aligned early as mentioned above.
 So for example files I removed all introduction content and therefore other Gutenberg Project references too since the text is altered.
 
 Other than that, general use case is to convert .epub into .txt with calibre software by it's `ebook-convert abc.epub left.txt`.
@@ -101,14 +101,14 @@ In the end it should produce:
 
 Then doing this should produce pdf (here with dimensions for RM device) `wkhtmltopdf --margin-top 0 --margin-right 0 --margin-bottom 0 --margin-left 0 --page-width 12in --page-height 9in 3-columns.html output.pdf`
 
-## Known bugs
+# Known bugs
 
 - handling of ... and .", quotation marks in general possibly
 - potential for lost text at the very end
 
 # Ideas
 
-- GPU pathfinding, currently single CPU Dijkstra search is a bottleneck (that does not matter for main use case)
+- GPU path-finding, currently single CPU Dijkstra search is a bottleneck (that does not matter for main use case)
 - CLI
 - Torch dependency
 - Ruby->Rust last bits
@@ -118,4 +118,4 @@ Then doing this should produce pdf (here with dimensions for RM device) `wkhtmlt
 - Warning: a lot of chat-gpt, ruby->rust conversions, incremental development with older things that may be around still.
 - there are simple noise compensations that could affect paths through noisy places, what can be seen on overlaps of those half-windows (the whole noise compensation is not visualized actually, so it may need a first look)
 - there is a mechanism to remove bias toward shortcuts of path-finding and to an extent it biases toward diagonal paths. It affects costs of final row/column (and initial ones on the very first iteration).
-- I was somewhat surprised that pathfinding does it so well with that bias mechanism and half-window movement
+- I was somewhat surprised that path-finding does it so well with that bias mechanism and half-window movement

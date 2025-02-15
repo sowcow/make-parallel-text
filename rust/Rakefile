@@ -44,3 +44,8 @@ desc "test --doc"
 task :t do
   exec env + 'cargo test --doc'
 end
+
+# desc "check"
+# task :check do
+#   exec env + 'cargo run --rele'
+# end

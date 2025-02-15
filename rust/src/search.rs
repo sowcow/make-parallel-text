@@ -249,16 +249,8 @@ impl Pos {
         Pos(x, y, matrix, median)
     }
     fn is_flexible_start(&self) -> bool {
-        let &Pos(x, y, _, _) = self;
+        let &Pos(x, _y, _, _) = self;
         x == -1
-    }
-    fn height(&self) -> usize {
-        let Pos(_, _, matrix, _) = &self;
-        matrix.len()
-    }
-    fn width(&self) -> usize {
-        let Pos(_, _, matrix, _) = &self;
-        matrix[0].len()
     }
     // just reaching single pixel on the last row/column, could cut a bit there but not a problem
     fn reached(&self) -> bool {

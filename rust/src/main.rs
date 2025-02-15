@@ -1,4 +1,5 @@
 mod align;
+mod context;
 mod html;
 mod search;
 mod similarity;
@@ -6,10 +7,9 @@ mod split;
 
 use align::*;
 use anyhow::*;
+use clap::Parser;
 use glob::glob;
 use html::*;
-use pathfinding::prelude::dijkstra;
-use project_root::*;
 use regex::Regex;
 use search::*;
 use similarity::*;
@@ -17,39 +17,43 @@ use split::*;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
-use std::path::PathBuf;
 
 use tch::Device;
 
-fn sentences_from_file(file: &PathBuf) -> Result<Vec<String>> {
+fn sentences_from_file(file: &str) -> Result<Vec<String>> {
     let text = std::fs::read_to_string(file)?;
     Ok(split_into_sentences(&text))
 }
 
-fn produce_html_from_paths() -> Result<()> {
-    let left_sentences = sentences_from_file(&get_project_root()?.join("../input/left.txt"))?;
-    let right_sentences = sentences_from_file(&get_project_root()?.join("../input/right.txt"))?;
+fn produce_html_from_paths(context: &context::Context) -> Result<()> {
+    let left_sentences = sentences_from_file(&context.left)?;
+    let right_sentences = sentences_from_file(&context.right)?;
 
-    let path = joined_path()?;
-    std::fs::write(
-        "../path-of-alignment.json",
-        serde_json::to_string(&path).unwrap(),
-    )
-    .unwrap();
+    let path = joined_path(&context)?;
+    let result_file = context.context.clone() + "/result.json";
+    let data = (
+        path.clone(),
+        left_sentences.clone(),
+        right_sentences.clone(),
+    );
+    std::fs::write(&result_file, serde_json::to_string(&data).unwrap()).unwrap();
 
     let html = produce_html(&left_sentences, &right_sentences, &path, 3);
-    std::fs::write("../3-columns.html", html).unwrap();
+    let file = context.context.clone() + "/3-columns.html";
+    std::fs::write(&file, html).unwrap();
 
     let html = produce_html(&left_sentences, &right_sentences, &path, 2);
-    std::fs::write("../2-columns.html", html).unwrap();
+    let file = context.context.clone() + "/2-columns.html";
+    std::fs::write(&file, html).unwrap();
 
     let html = produce_html(&left_sentences, &right_sentences, &path, 1);
-    std::fs::write("../1-column.html", html).unwrap();
+    let file = context.context.clone() + "/1-column.html";
+    std::fs::write(&file, html).unwrap();
 
     Ok(())
 }
 
-fn joined_path() -> Result<Vec<(usize, usize)>> {
+fn joined_path(context: &context::Context) -> Result<Vec<(usize, usize)>> {
     // Compile the regex to capture X, Y, Z from filenames like "path-X-Y-Z.json"
     let re = Regex::new(r"path-(\d+)-(\d+)-(\d+)\.json$")?;
 
@@ -65,7 +69,8 @@ fn joined_path() -> Result<Vec<(usize, usize)>> {
     // Collect all files matching the pattern (using a wildcard).
     // Adjust the pattern to your actual directory if needed, e.g. "some_dir/path-*-*-*.json"
     let mut files = Vec::new();
-    for entry in glob("../log/path-*-*-*.json")? {
+    let pattern = context.context.clone() + "/path-*-*-*.json";
+    for entry in glob(&pattern)? {
         let path_str = entry?.to_string_lossy().to_string();
         if let Some(filename) = Path::new(&path_str).file_name().and_then(|s| s.to_str()) {
             // Use the regex to parse X, Y, Z
@@ -160,9 +165,10 @@ pub fn remove_backtracks(path: &[(usize, usize)]) -> Vec<(usize, usize)> {
 
 fn main() -> Result<()> {
     println!("Device: {:?}", Device::cuda_if_available());
+    let context = context::Context::parse();
 
-    let left_sentences = sentences_from_file(&get_project_root()?.join("../input/left.txt"))?;
-    let right_sentences = sentences_from_file(&get_project_root()?.join("../input/right.txt"))?;
+    let left_sentences = sentences_from_file(&context.left)?;
+    let right_sentences = sentences_from_file(&context.right)?;
 
     let ctx = AlignContext::new();
 
@@ -173,17 +179,16 @@ fn main() -> Result<()> {
     let mut right_start: usize = 0;
 
     // 4090 seem to fit 1000-1500, but dijkstra is too slow above 500
-    let score_batch = 300 as usize;
-
-    std::fs::create_dir("../log").ok();
+    //let score_batch = 300 as usize;
+    let score_batch = context.window_size as usize;
 
     loop {
         println!("iteration: {}...", iteration);
         let flexible_start = iteration == 0;
 
         let path_file_name = format!(
-            "../log/path-{}-{}-{}.json",
-            iteration, left_start, right_start
+            "{}/path-{}-{}-{}.json",
+            context.context, iteration, left_start, right_start
         );
         let path = if std::fs::metadata(path_file_name.clone()).is_ok() {
             println!("=> skipped");
@@ -209,8 +214,8 @@ fn main() -> Result<()> {
 
             std::fs::write(
                 format!(
-                    "../log/matrix-{}-{}-{}.json",
-                    iteration, left_start, right_start
+                    "{}/matrix-{}-{}-{}.json",
+                    context.context, iteration, left_start, right_start
                 ),
                 serde_json::to_string(&similarity_matrix).unwrap(),
             )
@@ -240,7 +245,7 @@ fn main() -> Result<()> {
         iteration += 1;
     }
 
-    produce_html_from_paths()?;
+    produce_html_from_paths(&context)?;
 
     Ok(())
 }

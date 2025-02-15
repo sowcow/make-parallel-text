@@ -24,6 +24,7 @@ Technical note: this way of running does not involve GPU for ease of use and max
 1. open directory containing two text files to align, I'll call this the `content` directory
 1. create inside of it empty subdirectory named `state`
 1. make sure books start roughly at the same place (delete intro chapters for example if they differ)
+1. run Docker Desktop app if on Windows
 1. open terminal in `content` directory and run this command, but replace `A.txt` and `B.txt` with own file names, or just rename files themselves instead:
   `docker run -e RUSTBERT_CACHE=/cache -v model_cache:/cache -v "$(pwd)/state:/state" -v "$(pwd)/A.txt:/app/A.txt" -v "$(pwd)/B.txt:/app/B.txt" ghcr.io/sowcow/make-parallel-text:latest bash -c "./make-parallel-text --context /state --left A.txt --right B.txt --window-size 100"`
 1. if all goes well it should download things and start doing the alignment iterations, if process is interrupted and restarted it continues from last complete iteration

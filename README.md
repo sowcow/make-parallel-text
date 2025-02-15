@@ -10,7 +10,7 @@ Example here does exactly that with two public domain translations of Iliad into
 
 - stretched use case example output: https://sowcow.github.io/make-parallel-text/
 - supported languages discussion: https://huggingface.co/sentence-transformers/distiluse-base-multilingual-cased/discussions/2
-  > languages: Arabic, Chinese, Dutch, English, French, German, Italian, Korean, Polish, Portuguese, Russian, Spanish, Turkish.
+  > Arabic, Chinese, Dutch, English, French, German, Italian, Korean, Polish, Portuguese, Russian, Spanish, Turkish.
 - it supports some unstated there languages too, Serbian for example
 
 ## Easy Way of Using It

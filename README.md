@@ -25,7 +25,7 @@ Technical note: this way of running does not involve GPU for ease of use and max
 1. create inside of it empty subdirectory named `state`
 1. make sure books start roughly at the same place (delete intro chapters for example if they differ)
 1. open terminal in `content` directory and run this command, but replace `A.txt` and `B.txt` with own file names, or just rename files themselves instead:
-  `docker run -e RUSTBERT_CACHE=/cache -v model_cache:/cache -v "$(pwd)/state:/state" -v "$(pwd)/A.txt:/app/A.txt" -v "$(pwd)/B.txt:/app/B.txt" make-parallel-text:latest bash -c "./make-parallel-text --context /state --left A.txt --right B.txt --window-size 100"`
+  `docker run -e RUSTBERT_CACHE=/cache -v model_cache:/cache -v "$(pwd)/state:/state" -v "$(pwd)/A.txt:/app/A.txt" -v "$(pwd)/B.txt:/app/B.txt" ghcr.io/sowcow/make-parallel-text:latest bash -c "./make-parallel-text --context /state --left A.txt --right B.txt --window-size 100"`
 1. if all goes well it should download things and start doing the alignment iterations, if process is interrupted and restarted it continues from last complete iteration
 1. if all went well then it produces three output files in `state` directory: `2-columns.html` for general vertically divided view, `3-columns.html` has space for notes at the right, `1-column.html` for small devices that do not fit columns well
 1. if the process produced alignment that becomes wrong at some point, then you may try to re-run it with bigger window_size - delete and re-create `state` directory to be empty before re-running it; bigger window allows for longer mismatcing segments between texts but reduces process speed significantly

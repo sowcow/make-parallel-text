@@ -32,7 +32,8 @@ Technical note: this way of running does not involve GPU for ease of use and max
 1. if all went well then it produces three output files in `state` directory: `2-columns.html` for general vertically divided view, `3-columns.html` has space for notes at the right, `1-column.html` for small devices that do not fit columns well
 1. if the process produced alignment that becomes wrong at some point, then you may try to re-run it with bigger window_size - delete and re-create `state` directory to be empty before re-running it; bigger window allows for longer mismatcing segments between texts but reduces process speed significantly
 
-If `.html` files look good, install and use Calibre software for example to make ebook with command like this: `ebook-convert state/3-columns.html output.pdf --margin-top 0 --margin-right 0 --margin-bottom 0 --margin-left 0`
+Any of the produced `.html` files can be directly opened by any browser or an ebook can be made with Calibre software, or any other tool,
+such as this one if installed: `wkhtmltopdf --margin-top 0 --margin-right 0 --margin-bottom 0 --margin-left 0 --page-width 12in --page-height 9in 3-columns.html 3-output.pdf`
 
 ## Known bugs
 

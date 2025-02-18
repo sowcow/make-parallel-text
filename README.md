@@ -30,7 +30,10 @@ Technical note: this way of running does not involve GPU for ease of use and max
   `docker run -e RUSTBERT_CACHE=/cache -v model_cache:/cache -v "$(pwd)/state:/state" -v "$(pwd)/A.txt:/app/A.txt" -v "$(pwd)/B.txt:/app/B.txt" ghcr.io/sowcow/make-parallel-text:latest bash -c "./make-parallel-text --context /state --left A.txt --right B.txt --window-size 100"`
 1. if all goes well it should download things and start doing the alignment iterations, if process is interrupted and restarted it continues from last complete iteration
 1. if all went well then it produces three output files in `state` directory: `2-columns.html` for general vertically divided view, `3-columns.html` has space for notes at the right, `1-column.html` for small devices that do not fit columns well
-1. if the process produced alignment that becomes wrong at some point, then you may try to re-run it with bigger window_size - delete and re-create `state` directory to be empty before re-running it; bigger window allows for longer mismatcing segments between texts but reduces process speed significantly
+
+- if alignment is wrong from the start then texts do not start at same point and non-matching beginnings should be deleted from the text files
+- on some slow hardware it may make sense to reduce window-size, but tolerance for unmatched sentences goes down, for example window-size 100 should tolerate under 50 consecutive insertions or deletions (sentences) from one of text
+- unlikely situation, but generally speaking if the process produced alignment that starts right and becomes wrong at some point, then you may try to re-run it with bigger window-size (300 is probably reasonable maximum) - delete and re-create `state` directory to be empty before re-running it; bigger window allows for longer mismatcing segments between texts but reduces process speed significantly
 
 Any of the produced `.html` files can be directly opened by any browser or an ebook can be made with Calibre software, or any other tool,
 such as this one if installed: `wkhtmltopdf --margin-top 0 --margin-right 0 --margin-bottom 0 --margin-left 0 --page-width 12in --page-height 9in 3-columns.html 3-output.pdf`

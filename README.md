@@ -17,7 +17,7 @@ Example here does exactly that with two public domain translations of Iliad into
 
 Prerequisites:
 - I think average PC/laptop should be fine
-- it should use not more than 2Gb of disk space
+- it should use not more than 2Gb of disk space given Docker is already installed
 - install Docker, do restart if needed
 
 Technical note: this way of running does not involve GPU for ease of use and maximal compatibility, the tradeoff is speed of the process itself.
